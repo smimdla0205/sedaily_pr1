@@ -1,6 +1,8 @@
-STACK_NAME=pr1-two
-S3_BUCKET=pr1-two-frontend
-CLOUDFRONT_ID=E1M57P7GY84TB3
-CLOUDFRONT_URL=https://d1khn043sner94.cloudfront.net
+ENVIRONMENT=PRE-PR1
+STACK_NAME=pre-pr1
+S3_BUCKET=pr1-pre-front
+CLOUDFRONT_ID=E3F0F24DE4JESO
+CLOUDFRONT_URL=https://d22713h9sbtsnq.cloudfront.net
+CUSTOM_DOMAIN=https://pre-pr1.sedaily.ai
 REGION=us-east-1
-DEPLOYED_AT=2025년 11월  4일 화요일 10시 58분 03초 KST
+DEPLOYED_AT=2025년 11월 29일 (PRE-PR1 환경으로 전환)

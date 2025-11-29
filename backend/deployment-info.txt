@@ -100,24 +100,24 @@ REST API Lambda 함수:
 ========================================
 
 ========================================
-Lambda 코드 배포 완료
+Lambda 코드 배포 완료 (PRE-PR1 환경)
 ========================================
-배포 시간: 2025년 11월 04일 10시 15분 38초 KST
+배포 시간: 2025년 11월 29일 (PRE-PR1 환경으로 전환)
 
 배포 결과: 6/6 함수 성공
 
 WebSocket Lambda 함수:
-  - pr1-websocket-connect-two (Connect 핸들러)
-  - pr1-websocket-disconnect-two (Disconnect 핸들러)
-  - pr1-websocket-message-two (Message 핸들러)
+  - pr1-websocket-connect-pre (Connect 핸들러)
+  - pr1-websocket-disconnect-pre (Disconnect 핸들러)
+  - pr1-websocket-message-pre (Message 핸들러)
 
 REST API Lambda 함수:
-  - pr1-conversation-api-two (대화 관리)
-  - pr1-prompt-crud-two (프롬프트 CRUD)
-  - pr1-usage-handler-two (사용량 추적)
+  - pr1-conversation-api-pre (대화 관리)
+  - pr1-prompt-crud-pre (프롬프트 CRUD)
+  - pr1-usage-handler-pre (사용량 추적)
 
 환경변수 설정:
-  - 테이블: pr1-*-two
+  - 테이블: pr1-*-pre
   - API 엔드포인트: 실제 URL 설정
   - Bedrock: Claude Sonnet 4 모델
   - 로깅: INFO 레벨, CloudWatch 활성화

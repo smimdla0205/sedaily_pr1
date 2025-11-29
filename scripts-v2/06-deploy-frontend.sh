@@ -87,11 +87,33 @@ OAC_ID=$(aws cloudfront create-origin-access-control \
 
 echo "OAC ID: ${OAC_ID}"
 
-# 3. CloudFront 배포 생성
-echo "☁️ CloudFront 배포 생성"
+# 3. CloudFront 배포 생성 또는 기존 배포 사용
+echo "☁️ CloudFront 배포 확인"
 
-# CloudFront 설정을 JSON 파일로 생성
-cat > /tmp/distribution-config.json << EOF
+# 기존 CloudFront ID가 설정되어 있는지 확인
+if [ -n "$CLOUDFRONT_ID" ] && [ "$CLOUDFRONT_ID" != "None" ]; then
+    echo "✅ 기존 CloudFront 배포 사용: ${CLOUDFRONT_ID}"
+    DISTRIBUTION_ID=$CLOUDFRONT_ID
+    
+    # CloudFront 도메인 가져오기
+    CLOUDFRONT_DOMAIN=$(aws cloudfront get-distribution \
+        --id ${DISTRIBUTION_ID} \
+        --query 'Distribution.DomainName' \
+        --output text)
+    
+    echo "   CloudFront 도메인: ${CLOUDFRONT_DOMAIN}"
+    echo "   커스텀 도메인: ${CUSTOM_DOMAIN}"
+    
+    # CloudFront 배포 생성 단계 건너뛰기
+    SKIP_CF_CREATION=true
+else
+    echo "📝 새 CloudFront 배포 생성"
+    SKIP_CF_CREATION=false
+fi
+
+if [ "$SKIP_CF_CREATION" = false ]; then
+    # CloudFront 설정을 JSON 파일로 생성
+    cat > /tmp/distribution-config.json << EOF
 {
     "CallerReference": "${STACK_NAME}-$(date +%s)",
     "Comment": "${STACK_NAME} frontend",
@@ -149,20 +171,21 @@ cat > /tmp/distribution-config.json << EOF
 }
 EOF
 
-# CloudFront 배포 생성 또는 기존 ID 가져오기
-DISTRIBUTION_ID=$(aws cloudfront create-distribution \
-    --distribution-config file:///tmp/distribution-config.json \
-    --query 'Distribution.Id' \
-    --output text 2>/dev/null || \
-    aws cloudfront list-distributions \
-        --query "DistributionList.Items[?Comment=='${STACK_NAME} frontend'].Id | [0]" \
-        --output text)
+    # CloudFront 배포 생성 또는 기존 ID 가져오기
+    DISTRIBUTION_ID=$(aws cloudfront create-distribution \
+        --distribution-config file:///tmp/distribution-config.json \
+        --query 'Distribution.Id' \
+        --output text 2>/dev/null || \
+        aws cloudfront list-distributions \
+            --query "DistributionList.Items[?Comment=='${STACK_NAME} frontend'].Id | [0]" \
+            --output text)
 
-# CloudFront 도메인 가져오기
-CLOUDFRONT_DOMAIN=$(aws cloudfront get-distribution \
-    --id ${DISTRIBUTION_ID} \
-    --query 'Distribution.DomainName' \
-    --output text)
+    # CloudFront 도메인 가져오기
+    CLOUDFRONT_DOMAIN=$(aws cloudfront get-distribution \
+        --id ${DISTRIBUTION_ID} \
+        --query 'Distribution.DomainName' \
+        --output text)
+fi
 
 # 4. 프론트엔드 빌드 및 업로드
 echo "🔨 프론트엔드 빌드"
@@ -186,21 +209,27 @@ echo "✅ 프론트엔드 배포 완료!"
 echo "========================================="
 echo ""
 echo "📋 배포 정보:"
+echo "환경: PRE-PR1"
 echo "스택 이름: ${STACK_NAME}"
 echo "S3 버킷: ${S3_BUCKET}"
 echo "CloudFront ID: ${DISTRIBUTION_ID}"
 echo ""
 echo "🌐 접속 URL:"
-echo "https://${CLOUDFRONT_DOMAIN}"
+echo "CloudFront: https://${CLOUDFRONT_DOMAIN}"
+if [ -n "$CUSTOM_DOMAIN" ]; then
+    echo "커스텀 도메인: https://${CUSTOM_DOMAIN}"
+fi
 echo ""
 echo "⏳ CloudFront 배포가 완료되기까지 약 5-10분 소요됩니다."
 
 # 배포 정보 저장
 cat > deployment-info.txt << EOF
+ENVIRONMENT=PRE-PR1
 STACK_NAME=${STACK_NAME}
 S3_BUCKET=${S3_BUCKET}
 CLOUDFRONT_ID=${DISTRIBUTION_ID}
 CLOUDFRONT_URL=https://${CLOUDFRONT_DOMAIN}
+CUSTOM_DOMAIN=https://${CUSTOM_DOMAIN}
 REGION=${REGION}
 DEPLOYED_AT=$(date)
 EOF

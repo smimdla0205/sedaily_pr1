@@ -14,23 +14,21 @@ source config.sh
 echo "========================================="
 echo "   🚀 빠른 프론트엔드 재배포"
 echo "   스택: ${STACK_NAME}"
+echo "   환경: PRE-PR1"
 echo "========================================="
 
-# CloudFront Distribution ID 가져오기
-CLOUDFRONT_ID=$(aws cloudfront list-distributions \
-    --query "DistributionList.Items[?contains(Origins.Items[0].Id, '${S3_BUCKET}')].Id | [0]" \
-    --output text \
-    --region ${REGION})
-
-if [ -z "$CLOUDFRONT_ID" ] || [ "$CLOUDFRONT_ID" == "None" ]; then
-    echo "⚠️  CloudFront Distribution을 찾을 수 없습니다."
-    echo "전체 배포 스크립트를 사용하세요: ./06-deploy-frontend.sh"
+# CloudFront Distribution ID 사용 (config.sh에서 가져옴)
+if [ -z "$CLOUDFRONT_ID" ]; then
+    echo "⚠️  CloudFront Distribution ID가 설정되지 않았습니다."
+    echo "config.sh에서 CLOUDFRONT_ID를 확인하세요."
     exit 1
 fi
 
 echo "📋 배포 정보:"
 echo "   S3 버킷: ${S3_BUCKET}"
 echo "   CloudFront ID: ${CLOUDFRONT_ID}"
+echo "   CloudFront 도메인: ${CLOUDFRONT_DOMAIN}"
+echo "   커스텀 도메인: ${CUSTOM_DOMAIN}"
 echo ""
 
 # 프론트엔드 디렉토리로 이동
@@ -75,12 +73,9 @@ echo "========================================="
 echo "✅ 프론트엔드 재배포 완료!"
 echo "========================================="
 echo ""
-echo "🌐 CloudFront URL:"
-CLOUDFRONT_DOMAIN=$(aws cloudfront get-distribution \
-    --id ${CLOUDFRONT_ID} \
-    --query 'Distribution.DomainName' \
-    --output text)
-echo "   https://${CLOUDFRONT_DOMAIN}"
+echo "🌐 접속 URL:"
+echo "   CloudFront: https://${CLOUDFRONT_DOMAIN}"
+echo "   커스텀 도메인: https://${CUSTOM_DOMAIN}"
 echo ""
 echo "⏳ 변경사항이 반영되기까지 1-2분 소요됩니다."
 echo "========================================="

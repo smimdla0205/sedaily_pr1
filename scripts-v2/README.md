@@ -262,9 +262,17 @@ User is not authorized to perform: lambda:InvokeFunction
 
 **해결**:
 ```bash
-# 수동 캐시 무효화
+# 수동 캐시 무효화 (config.sh에 정의된 CloudFront ID 사용)
+source config.sh
+
+aws cloudfront create-invalidation \
+  --distribution-id $CLOUDFRONT_ID \
+  --paths "/*" \
+  --region us-east-1
+
+# 또는 S3 버킷 이름으로 찾기
 CLOUDFRONT_ID=$(aws cloudfront list-distributions \
-  --query "DistributionList.Items[?contains(Origins.Items[0].Id, 'demo-two-frontend')].Id | [0]" \
+  --query "DistributionList.Items[?contains(Origins.Items[0].Id, '${S3_BUCKET}')].Id | [0]" \
   --output text \
   --region us-east-1)
 
