@@ -1,0 +1,6 @@
+STACK_NAME=pr1-two
+S3_BUCKET=pr1-two-frontend
+CLOUDFRONT_ID=E1M57P7GY84TB3
+CLOUDFRONT_URL=https://d1khn043sner94.cloudfront.net
+REGION=us-east-1
+DEPLOYED_AT=2025년 11월  4일 화요일 10시 58분 03초 KST
