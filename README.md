@@ -1,4 +1,4 @@
-# Demo AI Chat Application - 배포 및 템플릿 작업 가이드
+#  AI Chat Application - 배포 및 템플릿 작업 가이드
 
 ## 목차
 
